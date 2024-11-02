@@ -1,44 +1,48 @@
-import { useDispatch} from 'react-redux'
-import { useState, useEffect } from 'react'
-import authService from './appwrite/auth'
-import { login,logout } from './Store/authSlice' 
-import { Footer, Header } from './Componets'
-import { Outlet } from 'react-router-dom'
-import conf from './conf/config'
-
+import { useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
+import authService from './appwrite/auth';
+import { login, logout } from './Store/authSlice'; 
+import { Footer, Header } from './Componets'; // Ensure proper import casing
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  const [loading, setLoading] = useState(true)
-  const dispatch = useDispatch()
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    authService.getCurrentUser()
-    .then((userData) => {
-      if(userData){
-        dispatch(login({userData: userData}))
+    const checkCurrentUser = async () => {
+      try {
+        const userData = await authService.getCurrentUser();
+        if (userData) {
+          dispatch(login({ userData }));
+        } else {
+          dispatch(logout());
+        }
+      } finally {
+        setLoading(false);
       }
-      else{
-        dispatch(logout())
-      }
-    })
-    .finally(()=> setLoading(false))
+    };
 
-  },[])
-  
-  
+    checkCurrentUser();
+  }, [dispatch]); // Include dispatch in the dependency array
 
-  return !loading ? (
-    <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>
-      <div className='w-full flex flex-col items-center justify-center'>
-        <Header />
-        <main>
-          <Outlet />
-        </main>
-        <Footer />
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <h2 className="text-xl">Loading...</h2> {/* Simple loading message */}
       </div>
+    );
+  }
+
+  return (
+    <div className='min-h-screen flex flex-col bg-gray-400'>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
     </div>
-  ) : null
+  );
 }
 
-export default App
+export default App;

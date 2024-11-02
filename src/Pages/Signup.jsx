@@ -1,10 +1,10 @@
 import React from 'react';
-import { Signup as SignupComponent } from '../Componets';
+import { Signup as SignupComponent } from '../Componets'; // Ensure proper import casing
 
-function Signup(props) {
+const Signup = () => {
     return (
         <div className='py-8'>
-            <SignupComponent />
+            <SignupComponent /> {/* Use PascalCase for component names */}
         </div>
     );
 }

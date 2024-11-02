@@ -18,8 +18,16 @@ function Signup(props) {
             const userData = await authService.createAccount(data);
             if (userData) {
                 const currentUser = await authService.getCurrentUser();
-                if (currentUser) dispatch(login(currentUser));
-                navigate("/");
+                if (currentUser) {
+                    // Dispatch first and wait for it to complete
+                    await new Promise(resolve => {
+                        dispatch(login({userData: currentUser}));
+                        // Give Redux a small amount of time to update
+                        setTimeout(resolve, 100);
+                    });
+                    // Then navigate
+                    navigate("/");
+                }
             }
         } catch (error) {
             setError(error.message);

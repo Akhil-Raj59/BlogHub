@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    status : false,
+    status: false,
     userData: null
 }
 
@@ -9,9 +9,10 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        login:(state,action) => {
+        login: (state, action) => {
             state.status = true;
-            state.userData = action.payload.userData
+            // Handle both {userData} and direct user object
+            state.userData = action.payload.userData || action.payload;
         },
         logout: (state) => {
             state.status = false;

@@ -18,13 +18,22 @@ function Login(props) {
             const session = await authService.login(data);
             if (session) {
                 const userData = await authService.getCurrentUser();
-                if (userData) dispatch(authLogin(userData));
-                navigate("/");
+                if (userData) {
+                    // Dispatch first and wait for it to complete
+                    await new Promise(resolve => {
+                        dispatch(authLogin({userData}));
+                        // Give Redux a small amount of time to update
+                        setTimeout(resolve, 100);
+                    });
+                    // Then navigate
+                    navigate("/");
+                }
             }
         } catch (error) {
             setError(error.message);
         }
     };
+
 
     return (
         <div className="flex items-center justify-center min-h-screen w-full px-4">

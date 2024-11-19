@@ -34,14 +34,13 @@ const Login = () => {
     // Generate chess board grid
     const generateGrid = () => {
         const grid = [];
-        const rows = 8;
+        const rows = 8;  // 8x8 chess board
         const cols = 8;
 
         for (let i = 0; i < rows * cols; i++) {
             const row = Math.floor(i / cols);
             const col = i % cols;
             const isEven = (row + col) % 2 === 0;
-            const animationDelay = `${(row + col) * 0.1}s`;
 
             grid.push({
                 key: i,
@@ -51,7 +50,6 @@ const Login = () => {
                     left: `${(col / cols) * 100}%`,
                     width: `${100 / cols}%`,
                     height: `${100 / rows}%`,
-                    animationDelay
                 }
             });
         }
@@ -60,8 +58,6 @@ const Login = () => {
 
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#8B4513] via-[#D2691E] to-[#8B4513] animate-gradient" />
             
             {/* Chess grid container */}
             <div className="absolute inset-0">
@@ -69,37 +65,36 @@ const Login = () => {
                     <div
                         key={key}
                         style={style}
-                        className={`absolute transition-all duration-300 animate-shine
-                            ${isEven ? 'bg-[#DEB887]/40' : 'bg-[#8B4513]/40'}
-                            hover:bg-[#CD853F]/80 hover:scale-[2] hover:rotate-45 hover:rounded-xl
+                        className={`absolute transition-all duration-300 
+                            ${isEven ? 'bg-pink-700' : 'bg-black'}
+                             hover:scale-[2] hover:rotate-45 hover:rounded-xl
                             hover:z-10 backdrop-blur-sm
-                            before:absolute before:inset-0 before:bg-shine before:animate-shine-move
-                            group cursor-pointer overflow-hidden`}
+                            group cursor-pointer`}
                     >
                         {/* Inner glow effect on hover */}
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 
-                            transition-opacity duration-300 bg-gradient-to-br from-[#FFE4B5]/30 
+                            transition-opacity duration-300 bg-gradient-to-br from-purple-400/20 
                             to-transparent rounded-xl" />
                     </div>
                 ))}
             </div>
 
             {/* Login form */}
-            <div className="w-full max-w-md bg-[#FFEFD5]/10 backdrop-blur-md rounded-xl p-8 shadow-2xl relative z-20 border border-[#DEB887]/30">
+            <div className="relative z-10 max-w-md w-full bg-black bg-opacity-80 rounded-lg shadow-lg p-8 border border-pink-700">
                 <div className="flex justify-center mb-4">
                     <Logo className="max-w-[80%]" />
                 </div>
 
-                <h2 className="text-center text-2xl font-bold text-[#8B4513]">Sign in to your account</h2>
-                <p className="mt-2 text-center text-sm text-[#A0522D]">
+                <h1 className="text-center text-3xl font-bold text-pink-500">Sign in to your account</h1>
+                <p className="mt-2 text-center text-gray-400">
                     Don&apos;t have an account?{" "}
-                    <Link to="/signup" className="text-[#8B4513] font-medium hover:text-[#A0522D]">
+                    <Link to="/signup" className="text-pink-500 font-medium hover:text-pink-300">
                         Sign Up
                     </Link>
                 </p>
 
                 {error && (
-                    <p className="mt-4 text-center text-red-700" aria-live="assertive">
+                    <p className="mt-4 text-center text-red-400" aria-live="assertive">
                         {error}
                     </p>
                 )}
@@ -110,7 +105,7 @@ const Login = () => {
                             label="Email:"
                             placeholder="Enter your email"
                             type="email"
-                            className="bg-white/20 border-[#DEB887]/50 text-[#8B4513] placeholder:text-[#A0522D]/70"
+                            className="bg-gray-900 border-gray-700 text-gray-300 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500"
                             {...register("email", {
                                 required: "Email is required",
                                 pattern: {
@@ -121,7 +116,7 @@ const Login = () => {
                             aria-invalid={errors.email ? "true" : "false"}
                         />
                         {errors.email && (
-                            <p className="text-xs text-red-700 mt-1" role="alert">
+                            <p className="text-xs text-red-400 mt-1" role="alert">
                                 {errors.email.message}
                             </p>
                         )}
@@ -132,12 +127,12 @@ const Login = () => {
                             label="Password:"
                             placeholder="Enter your password"
                             type="password"
-                            className="bg-white/20 border-[#DEB887]/50 text-[#8B4513] placeholder:text-[#A0522D]/70"
+                            className="bg-gray-900 border-gray-700 text-gray-300 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500"
                             {...register("password", { required: "Password is required" })}
                             aria-invalid={errors.password ? "true" : "false"}
                         />
                         {errors.password && (
-                            <p className="text-xs text-red-700 mt-1" role="alert">
+                            <p className="text-xs text-red-600 mt-1" role="alert">
                                 {errors.password.message}
                             </p>
                         )}
@@ -145,9 +140,7 @@ const Login = () => {
 
                     <button 
                         type="submit" 
-                        className="w-full py-2 bg-[#8B4513] text-[#FFEFD5] rounded-lg hover:bg-[#A0522D] 
-                            transition-all duration-200 shadow-lg hover:shadow-[#DEB887]/25 
-                            hover:scale-[1.02]"
+                        className="w-full py-3 bg-pink-600 text-black font-semibold rounded-lg shadow-md hover:bg-pink-500 hover:scale-105 transition-all duration-200"
                     >
                         Sign In
                     </button>

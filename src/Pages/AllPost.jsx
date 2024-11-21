@@ -27,10 +27,10 @@ function AllPost() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-dark-900">
+            <div className="min-h-screen flex items-center justify-center bg-gray-900">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-brand-200 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <h1 className="mt-4 text-lg font-semibold text-brand-100 animate-pulse">
+                    <div className="w-16 h-16 border-4 border-brand-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <h1 className="mt-4 text-lg font-semibold text-brand-300 animate-pulse">
                         Loading posts...
                     </h1>
                 </div>
@@ -55,9 +55,9 @@ function AllPost() {
 
     if (posts.length === 0) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-dark-900">
+            <div className="min-h-screen flex items-center justify-center bg-gray-900">
                 <Container>
-                    <div className="text-center p-8 rounded-lg shadow-dark-glow bg-dark-700">
+                    <div className="text-center p-8 rounded-lg shadow-dark-glow">
                         <h1 className="text-2xl font-bold text-brand-200 mb-4">
                             No posts available.
                         </h1>
@@ -71,13 +71,14 @@ function AllPost() {
     }
 
     return (
-        <div className="w-full py-12 bg-dark-900">
+        <div className="w-full py-12 bg-gray-900">
             <Container>
                 <h1 className="text-3xl font-bold text-center text-brand-200 mb-10">
                     All Posts
                 </h1>
                 <div className="flex flex-wrap justify-center gap-6">
-                    {posts.map((post) => (
+                    {/* Reverse the posts array to show the latest post first */}
+                    {[...posts].reverse().map((post) => (
                         <div
                             className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 transform hover:scale-105 transition-transform duration-300"
                             key={post.$id}

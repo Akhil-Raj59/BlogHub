@@ -33,10 +33,10 @@ function Home() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-dark-700 via-dark-800 to-dark-900">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-r bg-gray-800">
                 <div className="text-center">
-                    <div className="w-16 h-16 rounded-full border-4 border-brand-200 border-t-transparent animate-spin mx-auto"></div>
-                    <h1 className="mt-4 text-xl font-semibold text-brand-100 animate-pulse">
+                    <div className="w-16 h-16 rounded-full border-4 border-brand-400 border-t-transparent animate-spin mx-auto"></div>
+                    <h1 className="mt-4 text-xl font-semibold text-brand-300 animate-pulse">
                         Fetching the latest posts...
                     </h1>
                 </div>
@@ -52,7 +52,7 @@ function Home() {
                         <h1 className="text-2xl font-bold text-brand-200 mb-4">
                             Login To Read Posts
                         </h1>
-                        <p className="text-gray-400">
+                        <p className="text-purple-800">
                             Join us to explore exciting posts and share your thoughts.
                         </p>
                     </div>
@@ -62,13 +62,13 @@ function Home() {
     }
 
     return (
-        <div className="w-full py-12 min-h-screen bg-black">
+        <div className="w-full py-12 min-h-screen bg-gray-900">
             <Container>
                 <h1 className="text-3xl font-bold text-center text-brand-200 mb-10">
                     Latest Posts
                 </h1>
                 <div className="flex flex-wrap justify-center gap-6">
-                    {posts.map((post) => (
+                    {[...posts].reverse().map((post) => (
                         <div
                             key={post.$id}
                             className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 transform hover:scale-105 transition-transform duration-300"

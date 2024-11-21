@@ -54,7 +54,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="relative p-0 m-0 min-h-screen w-full flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
       {/* Chess grid container */}
       <div className="absolute inset-0">
         {generateGrid().map(({ key, isEven, style }) => (

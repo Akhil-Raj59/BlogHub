@@ -18,7 +18,7 @@ function Container({
 
     const paddingClasses = {
         x: padding ? 'px-4 sm:px-6 lg:px-8' : '',
-        y: padding ? 'py-4 sm:py-6 lg:py-8' : '',
+        y: padding ? 'py-2 sm:py-4 lg:py-7' : '',
     };
 
     const themeClasses = {

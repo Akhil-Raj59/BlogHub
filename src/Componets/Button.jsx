@@ -15,12 +15,11 @@ function Button({
     ...props
 }) {
     const variants = {
-        primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm',
-        secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 shadow-sm',
-        danger: 'bg-red-600 hover:bg-red-700 text-white shadow-sm',
-        success: 'bg-green-600 hover:bg-green-700 text-white shadow-sm',
-        outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
-        ghost: 'text-blue-600 hover:bg-blue-50'
+        primary: 'bg-pink-600 hover:bg-pink-500 text-black',
+        secondary: 'bg-gray-800 hover:bg-gray-700 text-gray-300',
+        danger: 'bg-red-600 hover:bg-red-500 text-white',
+        outline: 'border-2 border-pink-600 text-pink-600 hover:bg-pink-600/10',
+        ghost: 'text-pink-500 hover:bg-pink-600/10'
     };
 
     const sizes = {
@@ -31,7 +30,7 @@ function Button({
 
     const disabledStyles = disabled || isLoading
         ? 'opacity-50 cursor-not-allowed'
-        : 'transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]';
+        : 'transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]';
 
     const customColors = bgColor 
         ? `${bgColor} ${textColor || 'text-white'}`
@@ -39,9 +38,9 @@ function Button({
     
     const focusRingColor = variant === 'danger'
         ? 'focus:ring-red-500'
-        : variant === 'success'
-        ? 'focus:ring-green-500'
-        : 'focus:ring-blue-500';
+        : variant === 'primary'
+        ? 'focus:ring-pink-500'
+        : 'focus:ring-gray-500';
 
     return (
         <button
@@ -54,15 +53,29 @@ function Button({
                 ${disabledStyles}
                 inline-flex items-center justify-center
                 font-medium rounded-lg
-                ${focusRingColor} focus:outline-none focus:ring-2 focus:ring-offset-2
+                ${focusRingColor} 
+                focus:outline-none 
+                focus:ring-2 
+                focus:ring-offset-2
+                focus:ring-opacity-50
+                shadow-md
+                hover:shadow-dark-glow
+                active:shadow-none
                 ${className}
             `}
             {...props}
         >
             {isLoading ? (
-                <>
+                <div className="flex items-center">
                     <svg
-                        className={`animate-spin -ml-1 mr-2 h-4 w-4 ${textColor || 'text-white'}`}
+                        className={`
+                            animate-spin 
+                            -ml-1 
+                            mr-2 
+                            h-4 
+                            w-4 
+                            ${textColor || 'text-white'}
+                        `}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -82,7 +95,7 @@ function Button({
                         />
                     </svg>
                     Loading...
-                </>
+                </div>
             ) : (
                 <span className="inline-flex items-center">
                     {leftIcon && <span className="mr-2">{leftIcon}</span>}

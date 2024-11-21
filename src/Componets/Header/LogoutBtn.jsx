@@ -22,7 +22,7 @@ function LogoutBtn() {
 
     const Spinner = () => (
         <svg 
-            className="animate-spin -ml-1 mr-2 h-4 w-4 text-red-600" 
+            className="animate-spin -ml-1 mr-2 h-4 w-4 text-pink-600" 
             xmlns="http://www.w3.org/2000/svg" 
             fill="none" 
             viewBox="0 0 24 24"
@@ -55,10 +55,10 @@ function LogoutBtn() {
                 rounded-lg
                 transition-all duration-200
                 ${isLoading 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-red-50 text-red-600 hover:bg-red-100 active:bg-red-200'
+                    ? 'bg-gray-800 text-gray-400 cursor-not-allowed'
+                    : 'bg-pink-600 text-white hover:bg-pink-700 active:bg-pink-800'
                 }
-                focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+                focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2
             `}
         >
             {isLoading ? (

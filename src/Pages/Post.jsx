@@ -7,8 +7,8 @@ import { useSelector } from "react-redux";
 
 export default function Post() {
     const [post, setPost] = useState(null);
-    const [loading, setLoading] = useState(true); // New loading state
-    const [error, setError] = useState(null); // New error state
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
     const { slug } = useParams();
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
@@ -58,7 +58,12 @@ export default function Post() {
         return (
             <div className="py-8 text-center">
                 <Container>
-                    <h1 className="text-xl font-bold">Loading post...</h1>
+                    <div className="animate-pulse">
+                        <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 mx-auto"></div>
+                        <div className="h-96 bg-gray-200 rounded-xl w-full mb-6"></div>
+                        <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                        <div className="h-4 bg-gray-300 rounded w-2/4 mx-auto mt-2"></div>
+                    </div>
                 </Container>
             </div>
         );
@@ -77,31 +82,30 @@ export default function Post() {
     return post ? (
         <div className="py-8">
             <Container>
-                <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
+                <div className="relative border rounded-xl shadow-lg p-2 bg-dark-700">
                     <img
                         src={service.getFilePreview(post.featuredImage)}
                         alt={post.title}
-                        className="rounded-xl w-full h-auto" // Responsive image
+                        className="rounded-xl w-full h-auto object-cover"
                     />
-
                     {isAuthor && (
-                        <div className="absolute right-6 top-6">
+                        <div className="absolute top-4 right-4 flex space-x-2">
                             <Link to={`/edit-post/${post.$id}`}>
-                                <Button bgColor="bg-green-500" className="mr-3">
+                                <Button bgColor="bg-green-500" className="px-4 py-2">
                                     Edit
                                 </Button>
                             </Link>
-                            <Button bgColor="bg-red-500" onClick={deletePost}>
+                            <Button bgColor="bg-red-500" className="px-4 py-2" onClick={deletePost}>
                                 Delete
                             </Button>
                         </div>
                     )}
                 </div>
-                <div className="w-full mb-6">
-                    <h1 className="text-2xl font-bold">{post.title}</h1>
-                </div>
-                <div className="browser-css">
-                    {parse(post.content)}
+                <div className="mt-6">
+                    <h1 className="text-3xl font-bold text-brand-200 mb-4">{post.title}</h1>
+                    <div className="prose prose-lg max-w-full text-gray-300">
+                        {parse(post.content)}
+                    </div>
                 </div>
             </Container>
         </div>

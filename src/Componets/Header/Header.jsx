@@ -26,8 +26,8 @@ function Header() {
         <NavLink
             to={item.slug}
             className={({ isActive }) =>
-                `px-4 py-2 text-gray-700 rounded-lg transition-all duration-200 font-medium 
-                ${isActive ? 'text-blue-500' : 'hover:bg-gray-100 hover:text-gray-900'}`
+                `px-4 py-2 text-white rounded-lg transition-all duration-200 font-medium 
+                ${isActive ? 'text-pink-500' : 'hover:bg-orange-600 hover:text-white'}`
             }
             onClick={() => handleNavigation(item.slug)}
         >
@@ -36,9 +36,9 @@ function Header() {
     );
 
     return (
-        <header className="sticky top-0 z-50 bg-white shadow-md">
-            <Container>
-                <nav className="py-4" aria-label="Main Navigation">
+        <header className="sticky top-0 z-50 bg-orange-800 text-white shadow-md">
+            <Container theme=''>
+                <nav className="py-0" aria-label="Main Navigation">
                     <div className="flex items-center justify-between">
                         {/* Logo Section */}
                         <div className="flex items-center">
@@ -59,7 +59,7 @@ function Header() {
                         <div className="md:hidden">
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="p-2 text-gray-700 rounded-lg hover:bg-gray-100"
+                                className="p-2 text-white rounded-lg hover:bg-orange-600"
                                 aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
                                 aria-expanded={isMenuOpen}
                             >

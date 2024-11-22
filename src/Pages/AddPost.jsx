@@ -4,14 +4,10 @@ import { Container, PostForm } from '../Componets'; // Ensure the import path is
 function AddPost() {
     return (
         <div className="relative py-12 bg-gradient-to-br from-white via-black to-dark-600">
-            {/* Floating Background Elements */}
-            <div className="absolute top-0 left-0 w-48 h-48 bg-pink-600 rounded-full opacity-30 animate-floating blur-xl"></div>
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-pink-500 rounded-full opacity-20 animate-floating blur-2xl"></div>
-            
             <Container>
                 <div
                     className="
-                        max-w-3xl mx-auto 
+                        max-w-5xl mx-auto 
                         bg-dark-900 
                         border border-dark-700 
                         rounded-lg 

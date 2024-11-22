@@ -83,11 +83,13 @@ export default function Post() {
         <div className="py-8">
             <Container>
                 <div className="relative border rounded-xl shadow-lg p-2 bg-dark-700">
-                    <img
-                        src={service.getFilePreview(post.featuredImage)}
-                        alt={post.title}
-                        className="rounded-xl w-full h-auto object-cover"
-                    />
+                    <div className="relative w-full h-72">
+                        <img
+                            src={service.getFilePreview(post.featuredImage)}
+                            alt={post.title}
+                            className="object-contain w-full h-full"
+                        />
+                    </div>
                     {isAuthor && (
                         <div className="absolute top-4 right-4 flex space-x-2">
                             <Link to={`/edit-post/${post.$id}`}>

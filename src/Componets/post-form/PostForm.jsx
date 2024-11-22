@@ -7,7 +7,9 @@ import { useSelector } from "react-redux";
 
 function PostForm({ post }) {
     const [isLoading, setIsLoading] = useState(false);
-    const [previewImage, setPreviewImage] = useState(post?.featuredImage ? appwriteService.getFilePreview(post.featuredImage) : null);
+    const [previewImage, setPreviewImage] = useState(
+        post?.featuredImage ? appwriteService.getFilePreview(post.featuredImage) : null
+    );
     
     const { register, handleSubmit, watch, setValue, control, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -79,7 +81,6 @@ function PostForm({ post }) {
         return () => subscription.unsubscribe();
     }, [watch, slugTransform, setValue]);
 
-    // Handle image preview
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -92,215 +93,106 @@ function PostForm({ post }) {
     };
 
     return (
-        <form 
-    onSubmit={handleSubmit(submit)} 
-    className="
-        max-w-7xl 
-        mx-auto 
-        p-4 
-        animate-subtle-entrance
-    "
->
-    <div className="flex flex-col lg:flex-row gap-6">
-        {/* Main Content Section */}
-        <div className="lg:w-2/3 space-y-6">
-            <div 
-                className="
-                    bg-gray-900 
-                    border 
-                    border-gray-800 
-                    rounded-xl 
-                    shadow-dark-glow 
-                    p-6 
-                    space-y-6 
-                    transition-shadow 
-                    duration-300 
-                    hover:shadow-dark-intense
-                "
-            >
-                <Input
-                    label="Title"
-                    placeholder="Enter post title"
-                    className={`
-                        mb-3 
-                        ${errors.title ? 'border-red-500' : ''}
-                    `}
-                    {...register("title", { 
-                        required: "Title is required",
-                        minLength: { value: 5, message: "Title must be at least 5 characters" }
-                    })}
-                />
-                {errors.title && (
-                    <p 
-                        className="
-                            text-red-500 
-                            text-sm 
-                            mt-1 
-                            animate-pulse
-                        "
-                    >
-                        {errors.title.message}
-                    </p>
-                )}
+        <div className="min-h-screen bg-gray-950 py-8">
+            <form onSubmit={handleSubmit(submit)} className="container mx-auto px-4 max-w-6xl">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Main Content Section - Takes up 2/3 of the space */}
+                    <div className="lg:col-span-2">
+                        <div className="h-full bg-gray-900 rounded-xl border border-gray-800 p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:border-pink-700">
+                            <div className="space-y-6">
+                                <Input
+                                    label="Title"
+                                    placeholder="Enter post title"
+                                    className="mb-4"
+                                    error={errors.title?.message}
+                                    {...register("title", { 
+                                        required: "Title is required",
+                                        minLength: { value: 5, message: "Title must be at least 5 characters" }
+                                    })}
+                                />
 
-                <Input
-                    label="Slug"
-                    placeholder="post-slug"
-                    className={`
-                        mb-3 
-                        ${errors.slug ? 'border-red-500' : ''}
-                    `}
-                    {...register("slug", { required: "Slug is required" })}
-                    onInput={(e) => {
-                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
-                    }}
-                />
-                {errors.slug && (
-                    <p 
-                        className="
-                            text-red-500 
-                            text-sm 
-                            mt-1 
-                            animate-pulse
-                        "
-                    >
-                        {errors.slug.message}
-                    </p>
-                )}
+                                <Input
+                                    label="Slug"
+                                    placeholder="post-slug"
+                                    className="mb-4"
+                                    error={errors.slug?.message}
+                                    {...register("slug", { required: "Slug is required" })}
+                                    onInput={(e) => {
+                                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
+                                    }}
+                                />
 
-                <div className="prose max-w-full">
-                    <RTE 
-                        label="Content" 
-                        name="content" 
-                        control={control} 
-                        defaultValue={getValues("content")}
-                        required
-                    />
-                </div>
-            </div>
-        </div>
-
-        {/* Sidebar Section */}
-        <div className="lg:w-1/3 space-y-6">
-            <div 
-                className="
-                    bg-gray-900 
-                    border 
-                    border-gray-800 
-                    rounded-xl 
-                    shadow-dark-glow 
-                    p-6 
-                    space-y-6 
-                    transition-shadow 
-                    duration-300 
-                    hover:shadow-dark-intense
-                "
-            >
-                <div className="space-y-4">
-                    <div className="relative">
-                        <Input
-                            label="Featured Image"
-                            type="file"
-                            className={`
-                                mb-3 
-                                ${errors.image ? 'border-red-500' : ''}
-                            `}
-                            accept="image/png, image/jpg, image/jpeg, image/gif"
-                            {...register("image", { required: !post })}
-                            onChange={handleImageChange}
-                        />
-                        {errors.image && (
-                            <p 
-                                className="
-                                    text-red-500 
-                                    text-sm 
-                                    mt-1 
-                                    animate-pulse
-                                "
-                            >
-                                {errors.image.message}
-                            </p>
-                        )}
+                                <div className="prose prose-invert max-w-none">
+                                    <RTE 
+                                        label="Content" 
+                                        name="content" 
+                                        control={control} 
+                                        defaultValue={getValues("content")}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    {(previewImage || post) && (
-                        <div 
-                            className="
-                                w-full 
-                                aspect-video 
-                                relative 
-                                overflow-hidden 
-                                rounded-lg 
-                                group
-                            "
-                        >
-                            <img
-                                src={previewImage || appwriteService.getFilePreview(post.featuredImage)}
-                                alt="Post preview"
-                                className="
-                                    w-full 
-                                    h-full 
-                                    object-cover 
-                                    transition-transform 
-                                    duration-300 
-                                    group-hover:scale-110
-                                "
-                            />
+                    {/* Sidebar Section - Takes up 1/3 of the space */}
+                    <div className="lg:col-span-1">
+                        <div className="h-full bg-gray-900 rounded-xl border border-gray-800 p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:border-pink-700">
+                            <div className="space-y-6">
+                                <div className="space-y-4">
+                                    <Input
+                                        label="Featured Image"
+                                        type="file"
+                                        error={errors.image?.message}
+                                        accept="image/png, image/jpg, image/jpeg, image/gif"
+                                        {...register("image", { required: !post })}
+                                        onChange={handleImageChange}
+                                    />
+
+                                    {(previewImage || post) && (
+                                        <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
+                                            <img
+                                                src={previewImage || appwriteService.getFilePreview(post.featuredImage)}
+                                                alt="Post preview"
+                                                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <Select
+                                        options={["active", "inactive"]}
+                                        label="Status"
+                                        className="w-full"
+                                        {...register("status", { required: true })}
+                                    />
+
+                                    <Button 
+                                        type="submit" 
+                                        variant="primary"
+                                        className="w-full h-12 mt-4"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                </svg>
+                                                {post ? "Updating..." : "Creating..."}
+                                            </div>
+                                        ) : (
+                                            <span className="font-medium">
+                                                {post ? "Update Post" : "Create Post"}
+                                            </span>
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
-                    )}
-
-                    <Select
-                        options={["active", "inactive"]}
-                        label="Status"
-                        className="mb-4"
-                        {...register("status", { required: true })}
-                    />
-
-                    <Button 
-                        type="submit" 
-                        variant={post ? "success" : "primary"}
-                        className="
-                            w-full 
-                            flex 
-                            items-center 
-                            justify-center 
-                            gap-2
-                        "
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <>
-                                <svg 
-                                    className="animate-spin h-5 w-5 text-white" 
-                                    xmlns="http://www.w3.org/2000/svg" 
-                                    fill="none" 
-                                    viewBox="0 0 24 24"
-                                >
-                                    <circle 
-                                        className="opacity-25" 
-                                        cx="12" 
-                                        cy="12" 
-                                        r="10" 
-                                        stroke="currentColor" 
-                                        strokeWidth="4"
-                                    />
-                                    <path 
-                                        className="opacity-75" 
-                                        fill="currentColor" 
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    />
-                                </svg>
-                                {post ? "Updating..." : "Creating..."}
-                            </>
-                        ) : (
-                            post ? "Update Post" : "Create Post"
-                        )}
-                    </Button>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
-    </div>
-</form>
     );
 }
 

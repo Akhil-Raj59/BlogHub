@@ -14,7 +14,7 @@ function Footer() {
               </div>
               <div>
                 <p className="text-sm text-pink-400">
-                  &copy; Copyright 2024. All Rights Reserved by Akhil and team.
+                  &copy; Copyright 2024. All Rights Reserved by <span className='animate-glowPulse'>Akhil and team</span>.
                 </p>
               </div>
             </div>

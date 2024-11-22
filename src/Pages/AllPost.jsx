@@ -71,14 +71,14 @@ function AllPost() {
     }
 
     return (
-        <div className="w-full py-12 bg-gray-900">
+        <div className="w-full py-12 bg-gray-900 animate-floating">
             <Container>
-                <h1 className="text-3xl font-bold text-center text-brand-200 mb-10">
+                <h1 className="text-3xl animate-pulse font-bold text-center text-brand-200 mb-10">
                     All Posts
                 </h1>
                 <div className="flex flex-wrap justify-center gap-6">
                     {/* Reverse the posts array to show the latest post first */}
-                    {[...posts].reverse().map((post) => (
+                    {posts.map((post) => (
                         <div
                             className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 transform hover:scale-105 transition-transform duration-300"
                             key={post.$id}

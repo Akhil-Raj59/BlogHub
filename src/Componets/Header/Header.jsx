@@ -37,7 +37,7 @@ function Header() {
 
     return (
         <header className="sticky top-0 z-50 bg-gray-950 text-white shadow-md">
-            <Container theme=''>
+            <Container theme='' padding>
                 <nav className="py-0" aria-label="Main Navigation">
                     <div className="flex items-center justify-between">
                         {/* Logo Section */}

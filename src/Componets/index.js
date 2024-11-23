@@ -11,7 +11,8 @@ import PostCard from "./PostCard";
 import AuthLayout from "./AuthLayout"
 import Input from "./Input";
 import Button from "./Button";
-import Select from "../Componets/select/Select"
+import Select from "../Componets/select/Select";
+import Modal from "../Pages/Model";
 
 
 export {
@@ -28,5 +29,6 @@ export {
     AuthLayout,
     Input,
     Button,
-    Select
+    Select,
+    Modal
 }

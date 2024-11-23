@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import heroImage from "../assets/hero.jpg";
 import hero2Image from "../assets/hero2.jpg";
 import service from "../appwrite/conf";
+import Model from "./Model";
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
@@ -18,6 +19,17 @@ export default function Home() {
 
     const text = "No Posts Available";
     const staticChar = text[0];
+
+    const [showModal, setShowModal] = useState(false);
+
+    // adding model
+    useEffect(() => {
+        const hasModalBeenShown = localStorage.getItem("modalShown");
+        if (!hasModalBeenShown) {
+        setShowModal(true);
+        localStorage.setItem("modalShown", "true");
+        }
+    }, []);
 
     // Add resize handler for responsive postsPerView
     useEffect(() => {
@@ -107,7 +119,7 @@ export default function Home() {
         return (
             <div className="relative w-full px-4 sm:px-8 lg:px-12 py-8">
                 {/* Navigation Buttons - Hide on mobile, show on larger screens */}
-                <button
+                <button 
                     onClick={handlePrev}
                     className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
                     disabled={posts.length <= postsPerView}
@@ -210,8 +222,10 @@ export default function Home() {
     }
 
     return (
+        
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-8 sm:py-12">
             <Container>
+            {showModal && <Model />}
                 <div className="text-center space-y-4 mb-8 sm:mb-12">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent animate-bounce">
                         Latest Posts

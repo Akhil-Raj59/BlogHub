@@ -98,8 +98,22 @@ export default function Home() {
     };
 
     const PostSlider = () => {
+        const sliderRef = React.useRef(null);
+    
+        // Sync scroll position to `currentIndex`
+        useEffect(() => {
+            if (sliderRef.current) {
+                const scrollAmount = (currentIndex / postsPerView) * sliderRef.current.offsetWidth;
+                sliderRef.current.scrollTo({
+                    left: scrollAmount,
+                    behavior: "smooth",
+                });
+            }
+        }, [currentIndex, postsPerView]);
+    
         return (
             <div className="relative w-full px-4 sm:px-8 lg:px-12 py-8">
+                {/* Navigation Buttons */}
                 <button
                     onClick={handlePrev}
                     className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
@@ -107,7 +121,7 @@ export default function Home() {
                 >
                     <ChevronLeft size={24} />
                 </button>
-
+    
                 <button
                     onClick={handleNext}
                     className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
@@ -115,27 +129,31 @@ export default function Home() {
                 >
                     <ChevronRight size={24} />
                 </button>
-
-                <div className="overflow-hidden snap-x snap-mandatory">
+    
+                {/* Slider Container */}
+                <div
+                    ref={sliderRef}
+                    className="overflow-x-auto scroll-smooth snap-x snap-mandatory"
+                >
                     <div
                         className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out"
                         style={{
-                            transform: `translateX(-${(currentIndex / posts.length) * 100}%)`,
                             width: `${(posts.length * 100) / postsPerView}%`,
                         }}
                     >
-                        {posts.map((post, index) => (
+                        {posts.map((post) => (
                             <div
                                 key={post.$id}
                                 style={{ width: `${100 / postsPerView}%` }}
-                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105 snap-center"
+                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105 snap-start"
                             >
                                 <PostCard {...post} />
                             </div>
                         ))}
                     </div>
                 </div>
-
+    
+                {/* Pagination Dots */}
                 <div className="flex justify-center mt-4 sm:mt-6 gap-2">
                     {Array.from({ length: Math.ceil(posts.length / postsPerView) }).map((_, index) => (
                         <button
@@ -152,6 +170,7 @@ export default function Home() {
             </div>
         );
     };
+    
 
     if (loading) {
         return (

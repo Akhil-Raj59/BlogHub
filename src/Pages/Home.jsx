@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Container, PostCard, Button } from "../Componets";
@@ -14,30 +14,28 @@ export default function Home() {
     const [charIndex, setCharIndex] = useState(1);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [postsPerView, setPostsPerView] = useState(3);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+    const sliderRef = useRef(null);
     const isLoggedIn = useSelector((state) => state.auth.status);
 
     const text = "No Posts Available";
     const staticChar = text[0];
 
-    // Add resize handler for responsive postsPerView
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 640) { // sm breakpoint
+            if (window.innerWidth < 640) {
                 setPostsPerView(1);
-            } else if (window.innerWidth < 1024) { // lg breakpoint
+            } else if (window.innerWidth < 1024) {
                 setPostsPerView(2);
             } else {
                 setPostsPerView(3);
             }
         };
 
-        // Set initial value
         handleResize();
-
-        // Add event listener
         window.addEventListener('resize', handleResize);
-
-        // Cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
@@ -79,15 +77,14 @@ export default function Home() {
         }
     }, [charIndex, posts.length, text]);
 
-    // Auto-slide effect
     useEffect(() => {
-        if (posts.length > postsPerView) {
+        if (posts.length > postsPerView && !isDragging) {
             const interval = setInterval(() => {
                 handleNext();
             }, 5000);
             return () => clearInterval(interval);
         }
-    }, [currentIndex, posts.length, postsPerView]);
+    }, [currentIndex, posts.length, postsPerView, isDragging]);
 
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => {
@@ -103,10 +100,58 @@ export default function Home() {
         });
     };
 
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - sliderRef.current.offsetLeft);
+        setScrollLeft(sliderRef.current.scrollLeft);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - sliderRef.current.offsetLeft;
+        const walk = (x - startX) * 2;
+        sliderRef.current.scrollLeft = scrollLeft - walk;
+        
+        // Update currentIndex based on scroll position
+        const scrollPercentage = sliderRef.current.scrollLeft / (sliderRef.current.scrollWidth - sliderRef.current.clientWidth);
+        const newIndex = Math.round(scrollPercentage * (posts.length - postsPerView));
+        if (newIndex !== currentIndex) {
+            setCurrentIndex(Math.max(0, Math.min(newIndex, posts.length - postsPerView)));
+        }
+    };
+
+    const handleTouchStart = (e) => {
+        setIsDragging(true);
+        setStartX(e.touches[0].pageX - sliderRef.current.offsetLeft);
+        setScrollLeft(sliderRef.current.scrollLeft);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        const x = e.touches[0].pageX - sliderRef.current.offsetLeft;
+        const walk = (x - startX) * 2;
+        sliderRef.current.scrollLeft = scrollLeft - walk;
+        
+        // Update currentIndex based on scroll position
+        const scrollPercentage = sliderRef.current.scrollLeft / (sliderRef.current.scrollWidth - sliderRef.current.clientWidth);
+        const newIndex = Math.round(scrollPercentage * (posts.length - postsPerView));
+        if (newIndex !== currentIndex) {
+            setCurrentIndex(Math.max(0, Math.min(newIndex, posts.length - postsPerView)));
+        }
+    };
+
     const PostSlider = () => {
         return (
             <div className="relative w-full px-4 sm:px-8 lg:px-12 py-8">
-                {/* Navigation Buttons - Hide on mobile, show on larger screens */}
                 <button
                     onClick={handlePrev}
                     className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
@@ -123,19 +168,31 @@ export default function Home() {
                     <ChevronRight size={24} />
                 </button>
 
-                {/* Slider Container */}
-                <div className="overflow-hidden">
+                <div className="overflow-hidden cursor-grab active:cursor-grabbing">
                     <div
-                        className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out"
+                        ref={sliderRef}
+                        className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out overflow-x-auto scrollbar-hide"
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseMove={handleMouseMove}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleMouseUp}
+                        onTouchMove={handleTouchMove}
                         style={{
                             transform: `translateX(-${(currentIndex / posts.length) * 100}%)`,
-                            width: `${(posts.length * 100) / postsPerView}%`
+                            width: `${(posts.length * 100) / postsPerView}%`,
+                            scrollBehavior: 'smooth',
+                            scrollSnapType: 'x mandatory'
                         }}
                     >
                         {posts.map((post) => (
                             <div
                                 key={post.$id}
-                                style={{ width: `${100 / postsPerView}%` }}
+                                style={{ 
+                                    width: `${100 / postsPerView}%`,
+                                    scrollSnapAlign: 'start'
+                                }}
                                 className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105"
                             >
                                 <PostCard {...post} />
@@ -144,7 +201,6 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* Pagination Dots - Made more touch-friendly for mobile */}
                 <div className="flex justify-center mt-4 sm:mt-6 gap-2">
                     {Array.from({ length: Math.ceil(posts.length / postsPerView) }).map((_, index) => (
                         <button
@@ -223,7 +279,6 @@ export default function Home() {
                 
                 <PostSlider />
 
-                {/* Video Content Coming Soon Section */}
                 <div className="mt-16 sm:mt-24 flex flex-col md:flex-row items-center justify-center gap-8 sm:gap-12">
                     <div className="w-full md:w-1/2">
                         <div className="relative group">

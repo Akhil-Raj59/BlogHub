@@ -25,15 +25,17 @@ function Header() {
     const NavItem = ({ item }) => (
         <NavLink
         to={item.slug}
-        className={({ isActive }) =>
-            `px-4 py-2 text-white rounded-lg transition-all duration-200 font-medium 
-            ${isActive ? 'text-pink-700' : 'hover:bg-pink-600 hover:text-white'}
-            ${item.name === 'Add Post' ? 'animate-glowPulse' : 'hover:bg-pink-600 hover:text-white'}`
-        }
+        className={({ isActive }) => {
+            const baseClasses = "px-4 py-2 rounded-lg transition-all duration-200 font-medium";
+            const activeClasses = isActive ? "text-pink-700" : "text-white hover:bg-pink-600 hover:text-white";
+            const specialClasses = item.name === 'Add Post' ? "animate-glowPulse" : "hover:bg-pink-600 hover:text-white";
+            
+            return `${baseClasses} ${activeClasses} ${specialClasses}`;
+        }}
         onClick={() => handleNavigation(item.slug)}
-        >
+    >
         {item.name}
-        </NavLink>
+    </NavLink>
     );
 
     return (

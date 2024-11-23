@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Container, PostCard, Button } from "../Componets";
@@ -14,10 +14,6 @@ export default function Home() {
     const [charIndex, setCharIndex] = useState(1);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [postsPerView, setPostsPerView] = useState(3);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
-    const sliderRef = useRef(null);
     const isLoggedIn = useSelector((state) => state.auth.status);
 
     const text = "No Posts Available";
@@ -35,8 +31,9 @@ export default function Home() {
         };
 
         handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     useEffect(() => {
@@ -78,13 +75,13 @@ export default function Home() {
     }, [charIndex, posts.length, text]);
 
     useEffect(() => {
-        if (posts.length > postsPerView && !isDragging) {
+        if (posts.length > postsPerView) {
             const interval = setInterval(() => {
                 handleNext();
             }, 5000);
             return () => clearInterval(interval);
         }
-    }, [currentIndex, posts.length, postsPerView, isDragging]);
+    }, [currentIndex, posts.length, postsPerView]);
 
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => {
@@ -98,55 +95,6 @@ export default function Home() {
             const newIndex = prevIndex + postsPerView;
             return newIndex >= posts.length ? 0 : newIndex;
         });
-    };
-
-    const handleMouseDown = (e) => {
-        setIsDragging(true);
-        setStartX(e.pageX - sliderRef.current.offsetLeft);
-        setScrollLeft(sliderRef.current.scrollLeft);
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const handleMouseLeave = () => {
-        setIsDragging(false);
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const x = e.pageX - sliderRef.current.offsetLeft;
-        const walk = (x - startX) * 2;
-        sliderRef.current.scrollLeft = scrollLeft - walk;
-        
-        // Update currentIndex based on scroll position
-        const scrollPercentage = sliderRef.current.scrollLeft / (sliderRef.current.scrollWidth - sliderRef.current.clientWidth);
-        const newIndex = Math.round(scrollPercentage * (posts.length - postsPerView));
-        if (newIndex !== currentIndex) {
-            setCurrentIndex(Math.max(0, Math.min(newIndex, posts.length - postsPerView)));
-        }
-    };
-
-    const handleTouchStart = (e) => {
-        setIsDragging(true);
-        setStartX(e.touches[0].pageX - sliderRef.current.offsetLeft);
-        setScrollLeft(sliderRef.current.scrollLeft);
-    };
-
-    const handleTouchMove = (e) => {
-        if (!isDragging) return;
-        const x = e.touches[0].pageX - sliderRef.current.offsetLeft;
-        const walk = (x - startX) * 2;
-        sliderRef.current.scrollLeft = scrollLeft - walk;
-        
-        // Update currentIndex based on scroll position
-        const scrollPercentage = sliderRef.current.scrollLeft / (sliderRef.current.scrollWidth - sliderRef.current.clientWidth);
-        const newIndex = Math.round(scrollPercentage * (posts.length - postsPerView));
-        if (newIndex !== currentIndex) {
-            setCurrentIndex(Math.max(0, Math.min(newIndex, posts.length - postsPerView)));
-        }
     };
 
     const PostSlider = () => {
@@ -168,32 +116,19 @@ export default function Home() {
                     <ChevronRight size={24} />
                 </button>
 
-                <div className="overflow-hidden cursor-grab active:cursor-grabbing">
+                <div className="overflow-hidden snap-x snap-mandatory">
                     <div
-                        ref={sliderRef}
-                        className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out overflow-x-auto scrollbar-hide"
-                        onMouseDown={handleMouseDown}
-                        onMouseUp={handleMouseUp}
-                        onMouseLeave={handleMouseLeave}
-                        onMouseMove={handleMouseMove}
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleMouseUp}
-                        onTouchMove={handleTouchMove}
+                        className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out"
                         style={{
                             transform: `translateX(-${(currentIndex / posts.length) * 100}%)`,
                             width: `${(posts.length * 100) / postsPerView}%`,
-                            scrollBehavior: 'smooth',
-                            scrollSnapType: 'x mandatory'
                         }}
                     >
-                        {posts.map((post) => (
+                        {posts.map((post, index) => (
                             <div
                                 key={post.$id}
-                                style={{ 
-                                    width: `${100 / postsPerView}%`,
-                                    scrollSnapAlign: 'start'
-                                }}
-                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105"
+                                style={{ width: `${100 / postsPerView}%` }}
+                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105 snap-center"
                             >
                                 <PostCard {...post} />
                             </div>
@@ -208,8 +143,8 @@ export default function Home() {
                             onClick={() => setCurrentIndex(index * postsPerView)}
                             className={`w-3 h-3 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
                                 Math.floor(currentIndex / postsPerView) === index
-                                    ? 'bg-pink-500 w-8 sm:w-6'
-                                    : 'bg-gray-600 hover:bg-pink-400'
+                                    ? "bg-pink-500 w-8 sm:w-6"
+                                    : "bg-gray-600 hover:bg-pink-400"
                             }`}
                         />
                     ))}
@@ -251,16 +186,6 @@ export default function Home() {
                         </Button>
                     </Link>
                 </div>
-
-                <div className="w-full md:w-1/2 p-8 animate-floating">
-                    <div className="animate-glowPulse">
-                        <img
-                            src={heroImage}
-                            alt="Hero"
-                            className="w-full h-auto object-cover rounded-lg shadow-lg animate-pulseGradient"
-                        />
-                    </div>
-                </div>
             </div>
         );
     }
@@ -276,39 +201,8 @@ export default function Home() {
                         Discover and explore the newest content from our community
                     </p>
                 </div>
-                
-                <PostSlider />
 
-                <div className="mt-16 sm:mt-24 flex flex-col md:flex-row items-center justify-center gap-8 sm:gap-12">
-                    <div className="w-full md:w-1/2">
-                        <div className="relative group">
-                            <div className="absolute -inset-1 animate-floating bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-                            <div className="relative animate-glowPulse">
-                                <img
-                                    src={hero2Image}
-                                    alt="Video Content Coming Soon"
-                                    className="w-full h-auto object-cover rounded-lg shadow-2xl transform animate-pulseGradient group-hover:scale-105 transition duration-500"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full md:w-1/2 text-center md:text-left space-y-4 sm:space-y-6">
-                        <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                            Video Content Coming Soon
-                        </h2>
-                        <p className="text-lg sm:text-xl text-gray-400 leading-relaxed">
-                            Get ready for an immersive video experience! We're working on bringing you high-quality video content that will inspire, educate, and entertain. Stay tuned for updates and be the first to explore our upcoming video platform.
-                        </p>
-                        <Button 
-                            size="lg"
-                            variant="primary"
-                            className="animate-glowPulse transform hover:scale-105 transition-all duration-300"
-                            disabled
-                        >
-                            Coming Soon
-                        </Button>
-                    </div>
-                </div>
+                <PostSlider />
             </Container>
         </div>
     );

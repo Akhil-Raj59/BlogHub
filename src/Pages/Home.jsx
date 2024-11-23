@@ -19,21 +19,26 @@ export default function Home() {
     const text = "No Posts Available";
     const staticChar = text[0];
 
+    // Add resize handler for responsive postsPerView
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 640) {
+            if (window.innerWidth < 640) { // sm breakpoint
                 setPostsPerView(1);
-            } else if (window.innerWidth < 1024) {
+            } else if (window.innerWidth < 1024) { // lg breakpoint
                 setPostsPerView(2);
             } else {
                 setPostsPerView(3);
             }
         };
 
+        // Set initial value
         handleResize();
-        window.addEventListener("resize", handleResize);
 
-        return () => window.removeEventListener("resize", handleResize);
+        // Add event listener
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     useEffect(() => {
@@ -74,6 +79,7 @@ export default function Home() {
         }
     }, [charIndex, posts.length, text]);
 
+    // Auto-slide effect
     useEffect(() => {
         if (posts.length > postsPerView) {
             const interval = setInterval(() => {
@@ -98,22 +104,9 @@ export default function Home() {
     };
 
     const PostSlider = () => {
-        const sliderRef = React.useRef(null);
-    
-        // Sync scroll position to `currentIndex`
-        useEffect(() => {
-            if (sliderRef.current) {
-                const scrollAmount = (currentIndex / postsPerView) * sliderRef.current.offsetWidth;
-                sliderRef.current.scrollTo({
-                    left: scrollAmount,
-                    behavior: "smooth",
-                });
-            }
-        }, [currentIndex, postsPerView]);
-    
         return (
             <div className="relative w-full px-4 sm:px-8 lg:px-12 py-8">
-                {/* Navigation Buttons */}
+                {/* Navigation Buttons - Hide on mobile, show on larger screens */}
                 <button
                     onClick={handlePrev}
                     className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
@@ -121,7 +114,7 @@ export default function Home() {
                 >
                     <ChevronLeft size={24} />
                 </button>
-    
+
                 <button
                     onClick={handleNext}
                     className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
@@ -129,31 +122,29 @@ export default function Home() {
                 >
                     <ChevronRight size={24} />
                 </button>
-    
+
                 {/* Slider Container */}
-                <div
-                    ref={sliderRef}
-                    className="overflow-x-auto scroll-smooth snap-x snap-mandatory"
-                >
+                <div className="overflow-hidden">
                     <div
                         className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out"
                         style={{
-                            width: `${(posts.length * 100) / postsPerView}%`,
+                            transform: `translateX(-${(currentIndex / posts.length) * 100}%)`,
+                            width: `${(posts.length * 100) / postsPerView}%`
                         }}
                     >
                         {posts.map((post) => (
                             <div
                                 key={post.$id}
                                 style={{ width: `${100 / postsPerView}%` }}
-                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105 snap-start"
+                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105"
                             >
                                 <PostCard {...post} />
                             </div>
                         ))}
                     </div>
                 </div>
-    
-                {/* Pagination Dots */}
+
+                {/* Pagination Dots - Made more touch-friendly for mobile */}
                 <div className="flex justify-center mt-4 sm:mt-6 gap-2">
                     {Array.from({ length: Math.ceil(posts.length / postsPerView) }).map((_, index) => (
                         <button
@@ -161,8 +152,8 @@ export default function Home() {
                             onClick={() => setCurrentIndex(index * postsPerView)}
                             className={`w-3 h-3 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
                                 Math.floor(currentIndex / postsPerView) === index
-                                    ? "bg-pink-500 w-8 sm:w-6"
-                                    : "bg-gray-600 hover:bg-pink-400"
+                                    ? 'bg-pink-500 w-8 sm:w-6'
+                                    : 'bg-gray-600 hover:bg-pink-400'
                             }`}
                         />
                     ))}
@@ -170,7 +161,6 @@ export default function Home() {
             </div>
         );
     };
-    
 
     if (loading) {
         return (
@@ -205,6 +195,16 @@ export default function Home() {
                         </Button>
                     </Link>
                 </div>
+
+                <div className="w-full md:w-1/2 p-8 animate-floating">
+                    <div className="animate-glowPulse">
+                        <img
+                            src={heroImage}
+                            alt="Hero"
+                            className="w-full h-auto object-cover rounded-lg shadow-lg animate-pulseGradient"
+                        />
+                    </div>
+                </div>
             </div>
         );
     }
@@ -220,8 +220,40 @@ export default function Home() {
                         Discover and explore the newest content from our community
                     </p>
                 </div>
-
+                
                 <PostSlider />
+
+                {/* Video Content Coming Soon Section */}
+                <div className="mt-16 sm:mt-24 flex flex-col md:flex-row items-center justify-center gap-8 sm:gap-12">
+                    <div className="w-full md:w-1/2">
+                        <div className="relative group">
+                            <div className="absolute -inset-1 animate-floating bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
+                            <div className="relative animate-glowPulse">
+                                <img
+                                    src={hero2Image}
+                                    alt="Video Content Coming Soon"
+                                    className="w-full h-auto object-cover rounded-lg shadow-2xl transform animate-pulseGradient group-hover:scale-105 transition duration-500"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="w-full md:w-1/2 text-center md:text-left space-y-4 sm:space-y-6">
+                        <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                            Video Content Coming Soon
+                        </h2>
+                        <p className="text-lg sm:text-xl text-gray-400 leading-relaxed">
+                            Get ready for an immersive video experience! We're working on bringing you high-quality video content that will inspire, educate, and entertain. Stay tuned for updates and be the first to explore our upcoming video platform.
+                        </p>
+                        <Button 
+                            size="lg"
+                            variant="primary"
+                            className="animate-glowPulse transform hover:scale-105 transition-all duration-300"
+                            disabled
+                        >
+                            Coming Soon
+                        </Button>
+                    </div>
+                </div>
             </Container>
         </div>
     );

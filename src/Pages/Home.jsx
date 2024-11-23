@@ -13,11 +13,33 @@ export default function Home() {
     const [displayedText, setDisplayedText] = useState("");
     const [charIndex, setCharIndex] = useState(1);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [postsPerView, setPostsPerView] = useState(3);
     const isLoggedIn = useSelector((state) => state.auth.status);
 
     const text = "No Posts Available";
     const staticChar = text[0];
-    const postsPerView = 3; // Changed to 3 posts per view
+
+    // Add resize handler for responsive postsPerView
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 640) { // sm breakpoint
+                setPostsPerView(1);
+            } else if (window.innerWidth < 1024) { // lg breakpoint
+                setPostsPerView(2);
+            } else {
+                setPostsPerView(3);
+            }
+        };
+
+        // Set initial value
+        handleResize();
+
+        // Add event listener
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -45,19 +67,18 @@ export default function Home() {
         if (posts.length === 0) {
             const interval = setInterval(() => {
                 if (charIndex < text.length) {
-                    // Add the next character to the displayed text
                     setDisplayedText((prev) => prev + text[charIndex]);
-                    setCharIndex((prev) => prev + 1); // Move to the next character
+                    setCharIndex((prev) => prev + 1);
                 } else {
-                    // Once the entire text is displayed, reset the dynamic part
-                    setDisplayedText(staticChar); // Keep the first character static
-                    setCharIndex(1); // Start displaying the remaining text again from index 1
+                    setDisplayedText(staticChar);
+                    setCharIndex(1);
                 }
             }, 200);
 
-            return () => clearInterval(interval); // Cleanup on unmount
+            return () => clearInterval(interval);
         }
     }, [charIndex, posts.length, text]);
+
     // Auto-slide effect
     useEffect(() => {
         if (posts.length > postsPerView) {
@@ -66,7 +87,7 @@ export default function Home() {
             }, 5000);
             return () => clearInterval(interval);
         }
-    }, [currentIndex, posts.length]);
+    }, [currentIndex, posts.length, postsPerView]);
 
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => {
@@ -84,54 +105,54 @@ export default function Home() {
 
     const PostSlider = () => {
         return (
-            <div className="relative w-full px-12 py-8">
-                {/* Navigation Buttons */}
+            <div className="relative w-full px-4 sm:px-8 lg:px-12 py-8">
+                {/* Navigation Buttons - Hide on mobile, show on larger screens */}
                 <button
                     onClick={handlePrev}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
+                    className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
                     disabled={posts.length <= postsPerView}
                 >
                     <ChevronLeft size={24} />
                 </button>
-    
+
                 <button
                     onClick={handleNext}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
+                    className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-pink-500/20 hover:bg-pink-500/40 text-white transition-all duration-300 transform hover:scale-110"
                     disabled={posts.length <= postsPerView}
                 >
                     <ChevronRight size={24} />
                 </button>
-    
+
                 {/* Slider Container */}
                 <div className="overflow-hidden">
                     <div
-                        className="flex gap-6 transition-transform duration-500 ease-out"
+                        className="flex gap-3 sm:gap-4 lg:gap-6 transition-transform duration-500 ease-out"
                         style={{
                             transform: `translateX(-${(currentIndex / posts.length) * 100}%)`,
-                            width: `${posts.length * (100 / postsPerView)}%`
+                            width: `${(posts.length * 100) / postsPerView}%`
                         }}
                     >
                         {posts.map((post) => (
                             <div
                                 key={post.$id}
                                 style={{ width: `${100 / postsPerView}%` }}
-                                className="px-2 transform transition-all duration-300 hover:scale-105"
+                                className="px-1 sm:px-2 transform transition-all duration-300 hover:scale-105"
                             >
                                 <PostCard {...post} />
                             </div>
                         ))}
                     </div>
                 </div>
-    
-                {/* Pagination Dots */}
-                <div className="flex justify-center mt-6 gap-2">
+
+                {/* Pagination Dots - Made more touch-friendly for mobile */}
+                <div className="flex justify-center mt-4 sm:mt-6 gap-2">
                     {Array.from({ length: Math.ceil(posts.length / postsPerView) }).map((_, index) => (
                         <button
                             key={index}
                             onClick={() => setCurrentIndex(index * postsPerView)}
-                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            className={`w-3 h-3 sm:w-2 sm:h-2 rounded-full transition-all duration-300 ${
                                 Math.floor(currentIndex / postsPerView) === index
-                                    ? 'bg-pink-500 w-6'
+                                    ? 'bg-pink-500 w-8 sm:w-6'
                                     : 'bg-gray-600 hover:bg-pink-400'
                             }`}
                         />
@@ -140,7 +161,6 @@ export default function Home() {
             </div>
         );
     };
-    
 
     if (loading) {
         return (
@@ -189,15 +209,14 @@ export default function Home() {
         );
     }
 
-
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12">
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-8 sm:py-12">
             <Container>
-                <div className="text-center space-y-4 mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent animate-bounce">
+                <div className="text-center space-y-4 mb-8 sm:mb-12">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent animate-bounce">
                         Latest Posts
                     </h1>
-                    <p className="text-gray-400 text-lg">
+                    <p className="text-gray-400 text-base sm:text-lg">
                         Discover and explore the newest content from our community
                     </p>
                 </div>
@@ -205,7 +224,7 @@ export default function Home() {
                 <PostSlider />
 
                 {/* Video Content Coming Soon Section */}
-                <div className="mt-24 flex flex-col md:flex-row items-center justify-center gap-12">
+                <div className="mt-16 sm:mt-24 flex flex-col md:flex-row items-center justify-center gap-8 sm:gap-12">
                     <div className="w-full md:w-1/2">
                         <div className="relative group">
                             <div className="absolute -inset-1 animate-floating bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
@@ -218,11 +237,11 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-                    <div className="w-full md:w-1/2 text-center md:text-left space-y-6">
-                        <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                    <div className="w-full md:w-1/2 text-center md:text-left space-y-4 sm:space-y-6">
+                        <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
                             Video Content Coming Soon
                         </h2>
-                        <p className="text-xl text-gray-400 leading-relaxed">
+                        <p className="text-lg sm:text-xl text-gray-400 leading-relaxed">
                             Get ready for an immersive video experience! We're working on bringing you high-quality video content that will inspire, educate, and entertain. Stay tuned for updates and be the first to explore our upcoming video platform.
                         </p>
                         <Button 
